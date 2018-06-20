@@ -135,14 +135,23 @@ namespace LikenessExample
     {
         public static void ShouldEqual<TSource, TDestination>(this IEnumerable<Likeness<TSource, TDestination>> likenesses, IEnumerable<TDestination> destinations)
         {
-            likenesses.Count().Should().Be(destinations.Count());
-
             using (var likenessEnumerator = likenesses.GetEnumerator())
             using (var destinationEnumerator = destinations.GetEnumerator())
             {
-                while (likenessEnumerator.MoveNext() && destinationEnumerator.MoveNext())
+                bool likenessHasNext;
+                bool destinationHasNext;
+                while (true)
                 {
+                    likenessHasNext = likenessEnumerator.MoveNext();
+                    destinationHasNext = destinationEnumerator.MoveNext();
+                    if (!likenessHasNext || !destinationHasNext) break;
+
                     likenessEnumerator.Current.ShouldEqual(destinationEnumerator.Current);
+                }
+
+                if (likenessHasNext || destinationHasNext)
+                {
+                    throw new LikenessException("Compared collection does not have the same number of elements");
                 }
             }
         }
