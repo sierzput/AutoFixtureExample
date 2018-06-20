@@ -1,4 +1,5 @@
-﻿using SemanticComparison.Fluent;
+﻿using FluentAssertions;
+using SemanticComparison.Fluent;
 using Xunit;
 
 namespace LikenessExample
@@ -106,6 +107,14 @@ namespace LikenessExample
                 .With(c => c.Address).EqualsWhen((citizen1, citizen2) => citizen1.Address.AsSource().OfLikeness<Address>().Equals(citizen2.Address));
 
             likeness.ShouldEqual(_citizen2);
+        }
+
+        [Fact]
+        public void CompareWithProxyTest()
+        {
+            Person proxy = _employee.AsSource().OfLikeness<Person>().CreateProxy();
+
+            proxy.Should().BeEquivalentTo(_person);
         }
     }
 }
