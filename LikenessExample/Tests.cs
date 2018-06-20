@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
+using SemanticComparison;
 using SemanticComparison.Fluent;
 using Xunit;
 
@@ -115,6 +118,39 @@ namespace LikenessExample
             Person proxy = _employee.AsSource().OfLikeness<Person>().CreateProxy();
 
             proxy.Should().BeEquivalentTo(_person);
+        }
+
+        [Fact]
+        public void EmployeePersonCollectionCompareTest()
+        {
+            var employees = new List<Employee> { _employee, _employee, _employee };
+            var persons = new List<Person> { _person, _person, _person };
+            var likenesses = employees.AsSourceOfCollectionLikeness<Employee, Person>();
+
+            likenesses.ShouldEqual(persons);
+        }
+    }
+
+    public static class LikenessExtensions
+    {
+        public static void ShouldEqual<TSource, TDestination>(this IEnumerable<Likeness<TSource, TDestination>> likenesses, IEnumerable<TDestination> destinations)
+        {
+            likenesses.Count().Should().Be(destinations.Count());
+
+            using (var likenessEnumerator = likenesses.GetEnumerator())
+            using (var destinationEnumerator = destinations.GetEnumerator())
+            {
+                while (likenessEnumerator.MoveNext() && destinationEnumerator.MoveNext())
+                {
+                    likenessEnumerator.Current.ShouldEqual(destinationEnumerator.Current);
+                }
+            }
+        }
+
+        public static IEnumerable<Likeness<TSource, TDestination>> AsSourceOfCollectionLikeness<TSource, TDestination>(this IEnumerable<TSource> sources)
+        {
+            return sources.Select(source => new LikenessSource<TSource>(source))
+                .Select(source => source.OfLikeness<TDestination>());
         }
     }
 }
