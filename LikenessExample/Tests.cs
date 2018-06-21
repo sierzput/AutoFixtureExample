@@ -69,6 +69,14 @@ namespace LikenessExample
         }
 
         [Fact]
+        public void EmployeePersonBeforeCompareTest()
+        {
+            _employee.FirstName.Should().Be(_person.FirstName);
+            _employee.LastName.Should().Be(_person.LastName);
+            _employee.Age.Should().Be(_person.Age);
+        }
+
+        [Fact]
         public void EmployeePersonCompareTest()
         {
             var likeness = _employee.AsSource().OfLikeness<Person>();
