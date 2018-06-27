@@ -7,7 +7,7 @@ using Xunit;
 
 namespace LikenessExample
 {
-    public class Tests
+    public class SemanticComparisonExampleTests
     {
         private readonly Person _person;
         private readonly Person _person2;
@@ -16,7 +16,7 @@ namespace LikenessExample
         private readonly Citizen _citizen;
         private readonly Citizen _citizen2;
 
-        public Tests()
+        public SemanticComparisonExampleTests()
         {
             _person = new Person
             {
